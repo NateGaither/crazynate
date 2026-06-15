@@ -1,2 +1,3 @@
-# crazynate
-A website for experimenting with HTML and JavaScript
+# CrazyNate
+(www.crazynate.fyi)
+A specialized website for experimenting with HTML and JavaScript
