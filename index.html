@@ -1,1 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrazyNate.fyi</title>
 
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --accent: #38bdf8;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, sans-serif;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 4rem 1rem 2rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: var(--accent);
+        }
+
+        .subtitle {
+            color: var(--muted);
+            margin-top: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto;
+            padding: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .card h2 {
+            margin-bottom: 0.75rem;
+        }
+
+        .card p {
+            color: var(--muted);
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            background: var(--accent);
+            color: #000;
+            font-weight: bold;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+        }
+
+        .status {
+            margin-top: 3rem;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted);
+        }
+
+        #clock {
+            color: var(--accent);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>CrazyNate.fyi</h1>
+    <p class="subtitle">
+        Random web experiments, JavaScript projects, converters, tools, and whatever else I feel like building.
+    </p>
+</header>
+
+<main>
+
+    <div class="grid">
+
+        <div class="card">
+            <h2>🛠️ Tools</h2>
+            <p>Handy utilities, converters, generators, and calculators.</p>
+            <a class="btn" href="/tools/">Open Tools</a>
+        </div>
+
+        <div class="card">
+            <h2>🧪 Experiments</h2>
+            <p>HTML, CSS, and JavaScript projects that may or may not break.</p>
+            <a class="btn" href="/experiments/">Explore</a>
+        </div>
+
+        <div class="card">
+            <h2>📦 Projects</h2>
+            <p>Things I'm actively building or testing.</p>
+            <a class="btn" href="/projects/">View Projects</a>
+        </div>
+
+        <div class="card">
+            <h2>🎲 Random Stuff</h2>
+            <p>The internet was made for random stuff.</p>
+            <a class="btn" href="/random/">Go</a>
+        </div>
+
+    </div>
+
+    <div class="status">
+        <p>Current Time: <span id="clock">Loading...</span></p>
+    </div>
+
+</main>
+
+<footer>
+    <p>Built by Nate • Powered by curiosity and questionable ideas.</p>
+</footer>
+
+<script>
+function updateClock() {
+    document.getElementById("clock").textContent =
+        new Date().toLocaleString();
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+</script>
+
+</body>
+</html>
