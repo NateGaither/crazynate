@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generators | CrazyNate.fyi</title>
+
+<style>
+:root{
+    --bg:#0f172a;
+    --card:#1e293b;
+    --accent:#38bdf8;
+    --text:#f8fafc;
+    --success:#22c55e;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    padding:2rem;
+    background:var(--bg);
+    color:var(--text);
+    font-family:system-ui,sans-serif;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+}
+
+.card{
+    background:var(--card);
+    padding:1.5rem;
+    border-radius:16px;
+    margin-bottom:2rem;
+}
+
+h1{
+    text-align:center;
+    color:var(--accent);
+}
+
+input[type="range"]{
+    width:100%;
+}
+
+button{
+    background:var(--accent);
+    border:none;
+    padding:12px 16px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.output{
+    margin-top:15px;
+    padding:12px;
+    background:#020617;
+    border-radius:10px;
+    word-break:break-all;
+    font-family:monospace;
+}
+
+.strength{
+    margin-top:10px;
+    font-weight:bold;
+}
+
+label{
+    display:block;
+    margin:8px 0;
+}
+
+textarea{
+    width:100%;
+    height:180px;
+    background:#020617;
+    color:white;
+    border:none;
+    border-radius:10px;
+    padding:10px;
+    font-family:monospace;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>Generators</h1>
+
+<div class="card">
+
+<h2>🔐 Password Generator</h2>
+
+<p>Length: <span id="lengthValue">16</span></p>
+
+<input
+    type="range"
+    id="length"
+    min="8"
+    max="128"
+    value="16"
+>
+
+<label><input type="checkbox" id="upper" checked> Uppercase</label>
+<label><input type="checkbox" id="lower" checked> Lowercase</label>
+<label><input type="checkbox" id="numbers" checked> Numbers</label>
+<label><input type="checkbox" id="symbols" checked> Symbols</label>
+
+<button onclick="generatePassword()">
+Generate Password
+</button>
+
+<button onclick="copyPassword()">
+Copy Password
+</button>
+
+<div id="passwordOutput" class="output">
+Click Generate
+</div>
+
+<div id="strength" class="strength"></div>
+
+</div>
+
+<div class="card">
+
+<h2>🆔 UUID Generator</h2>
+
+<button onclick="generateUUID()">
+Generate UUID
+</button>
+
+<button onclick="generateFiveUUIDs()">
+Generate 5 UUIDs
+</button>
+
+<button onclick="copyUUIDs()">
+Copy UUID(s)
+</button>
+
+<textarea id="uuidOutput" readonly>
+Click Generate
+</textarea>
+
+</div>
+
+</div>
+
+<script>
+const lengthSlider = document.getElementById("length");
+const lengthValue = document.getElementById("lengthValue");
+
+lengthSlider.addEventListener("input", () => {
+    lengthValue.textContent = lengthSlider.value;
+});
+
+function generatePassword() {
+
+    let chars = "";
+
+    if(document.getElementById("upper").checked)
+        chars += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    if(document.getElementById("lower").checked)
+        chars += "abcdefghijklmnopqrstuvwxyz";
+
+    if(document.getElementById("numbers").checked)
+        chars += "0123456789";
+
+    if(document.getElementById("symbols").checked)
+        chars += "!@#$%^&*()_+-=[]{}<>?/";
+
+    if(chars.length === 0){
+        alert("Select at least one option.");
+        return;
+    }
+
+    const length = Number(lengthSlider.value);
+
+    const array = new Uint32Array(length);
+    crypto.getRandomValues(array);
+
+    let password = "";
+
+    for(let i=0;i<length;i++){
+        password += chars[array[i] % chars.length];
+    }
+
+    document.getElementById("passwordOutput").textContent = password;
+
+    updateStrength(password);
+}
+
+function updateStrength(password){
+
+    let score = 0;
+
+    if(password.length >= 12) score++;
+    if(password.length >= 20) score++;
+
+    if(/[A-Z]/.test(password)) score++;
+    if(/[a-z]/.test(password)) score++;
+    if(/[0-9]/.test(password)) score++;
+    if(/[^A-Za-z0-9]/.test(password)) score++;
+
+    let text = "Weak";
+    let color = "red";
+
+    if(score >= 4){
+        text = "Good";
+        color = "orange";
+    }
+
+    if(score >= 6){
+        text = "Strong";
+        color = "lime";
+    }
+
+    const el = document.getElementById("strength");
+    el.textContent = `Strength: ${text}`;
+    el.style.color = color;
+}
+
+async function copyPassword(){
+    const text =
+        document.getElementById("passwordOutput").textContent;
+
+    await navigator.clipboard.writeText(text);
+}
+
+function generateUUID(){
+    document.getElementById("uuidOutput").value =
+        crypto.randomUUID();
+}
+
+function generateFiveUUIDs(){
+
+    const list = [];
+
+    for(let i=0;i<5;i++){
+        list.push(crypto.randomUUID());
+    }
+
+    document.getElementById("uuidOutput").value =
+        list.join("\n");
+}
+
+async function copyUUIDs(){
+    await navigator.clipboard.writeText(
+        document.getElementById("uuidOutput").value
+    );
+}
+</script>
+
+</body>
+</html>
