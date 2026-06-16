@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Generator | CrazyNate.fyi</title>
+
+<style>
+:root{
+    --bg:#0f172a;
+    --card:#1e293b;
+    --accent:#38bdf8;
+    --text:#f8fafc;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    padding:2rem;
+    background:var(--bg);
+    color:var(--text);
+    font-family:system-ui,sans-serif;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+}
+
+.card{
+    background:var(--card);
+    border-radius:16px;
+    padding:1.5rem;
+}
+
+h1{
+    text-align:center;
+    color:var(--accent);
+}
+
+label{
+    display:block;
+    margin-top:1rem;
+    margin-bottom:.4rem;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#020617;
+    color:white;
+}
+
+button{
+    margin-top:1rem;
+    padding:12px 18px;
+    border:none;
+    border-radius:10px;
+    background:var(--accent);
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#qrcode{
+    margin-top:2rem;
+    display:flex;
+    justify-content:center;
+}
+
+.hidden{
+    display:none;
+}
+
+#downloadBtn{
+    display:none;
+    margin:auto;
+    margin-top:1rem;
+}
+
+small{
+    opacity:.7;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>QR Generator</h1>
+
+    <div class="card">
+
+        <label>QR Type</label>
+
+        <select id="type">
+            <option value="url">URL</option>
+            <option value="text">Text</option>
+            <option value="email">Email</option>
+            <option value="phone">Phone</option>
+            <option value="wifi">Wi-Fi Network</option>
+        </select>
+
+        <div id="normalFields">
+
+            <label>Content</label>
+
+            <textarea
+                id="content"
+                rows="4"
+                placeholder="Enter content..."
+            ></textarea>
+
+        </div>
+
+        <div id="wifiFields" class="hidden">
+
+            <label>Wi-Fi Name (SSID)</label>
+            <input type="text" id="ssid">
+
+            <label>Password</label>
+            <input type="text" id="wifiPassword">
+
+            <label>Security</label>
+            <select id="security">
+                <option value="WPA">WPA/WPA2/WPA3</option>
+                <option value="WEP">WEP</option>
+                <option value="">Open Network</option>
+            </select>
+
+            <small>
+                Scan to automatically join the network.
+            </small>
+
+        </div>
+
+        <button onclick="generateQR()">
+            Generate QR Code
+        </button>
+
+        <div id="qrcode"></div>
+
+        <button id="downloadBtn" onclick="downloadQR()">
+            Download PNG
+        </button>
+
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+
+const typeSelect = document.getElementById("type");
+
+typeSelect.addEventListener("change", () => {
+
+    const wifi =
+        typeSelect.value === "wifi";
+
+    document
+        .getElementById("wifiFields")
+        .classList.toggle("hidden", !wifi);
+
+    document
+        .getElementById("normalFields")
+        .classList.toggle("hidden", wifi);
+});
+
+function generateQR() {
+
+    const qrContainer =
+        document.getElementById("qrcode");
+
+    qrContainer.innerHTML = "";
+
+    let data = "";
+
+    switch(typeSelect.value){
+
+        case "url":
+        case "text":
+            data =
+                document.getElementById("content").value;
+            break;
+
+        case "email":
+            data =
+                "mailto:" +
+                document.getElementById("content").value;
+            break;
+
+        case "phone":
+            data =
+                "tel:" +
+                document.getElementById("content").value;
+            break;
+
+        case "wifi":
+
+            const ssid =
+                document.getElementById("ssid").value;
+
+            const password =
+                document.getElementById("wifiPassword").value;
+
+            const security =
+                document.getElementById("security").value;
+
+            data =
+                `WIFI:T:${security};S:${ssid};P:${password};;`;
+
+            break;
+    }
+
+    if(!data.trim()){
+        alert("Please enter some data.");
+        return;
+    }
+
+    new QRCode(qrContainer,{
+        text:data,
+        width:256,
+        height:256
+    });
+
+    document.getElementById("downloadBtn")
+        .style.display = "block";
+}
+
+function downloadQR(){
+
+    const img =
+        document.querySelector("#qrcode img");
+
+    const canvas =
+        document.querySelector("#qrcode canvas");
+
+    let source = "";
+
+    if(img){
+        source = img.src;
+    }else if(canvas){
+        source = canvas.toDataURL("image/png");
+    }else{
+        return;
+    }
+
+    const a =
+        document.createElement("a");
+
+    a.href = source;
+    a.download = "qrcode.png";
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+}
+
+</script>
+
+</body>
+</html>
